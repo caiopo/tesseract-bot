@@ -1,8 +1,9 @@
 import telegram
 import time
-import util
 import pytesseract
 import config
+import os
+
 try:
 	import Image
 except ImportError:
@@ -11,24 +12,21 @@ except ImportError:
 help_text = """
 Send me an image and I will run Google's Tesseract OCR tool on it and send you back the results.
 
-You can change the language I use on Tesseract by sending me `/lang`.
+You can change the language I use on Tesseract by sending me `/lang <code>`.
 
-*strong*
+The <code> must be one of the following codes:
 
-_italic_
-
+Code -> Language
+eng  -> English
+por  -> Portuguese
+spa  -> Spanish
+fra  -> French
+ita  -> Italian
+jpn  -> Japanese
 """
 
-# The <code> must be one of the following codes:
-
-# Code|Language
-# ----|--------
-# eng | English
-# por | Portuguese
-# spa | Spanish
-# fra | French
-# ita | Italian
-# jpn | Japanese
+# /setcommands
+# lang - query or set your current language
 
 lang_dict = {}
 
@@ -47,31 +45,39 @@ def start(bot, update):
 	bot.sendMessage(chat_id=update.message.chat_id, text="Hello! I'm Tesseract Bot!\n\n"+help_text, parse_mode=telegram.ParseMode.MARKDOWN)
 
 def help(bot, update):
-		bot.sendMessage(chat_id=update.message.chat_id, text=help_text, parse_mode=telegram.ParseMode.MARKDOWN)
+	bot.sendMessage(chat_id=update.message.chat_id, text=help_text, parse_mode=telegram.ParseMode.MARKDOWN)
+
 def unknown(bot, update):
 	bot.sendMessage(chat_id=update.message.chat_id, text="Sorry, I didn't understand that command.")
 
 def message(bot, update):
-	photoFile = bot.getFile(update.message.photo[-1].file_id)
 
-	filename = config.CACHE_DIR+'/photo_'+''.join(str(time.time()).split('.'))+'.jpg'
+	try:
+		photoFile = bot.getFile(update.message.photo[-1].file_id)
 
-	photoFile.download(filename)
+		filename = config.CACHE_DIR+'/photo_'+''.join(str(time.time()).split('.'))+'.jpg'
 
-	language = lang_dict.get(update.message.chat_id, default_lang)
+		photoFile.download(filename)
 
-	image_text = pytesseract.image_to_string(Image.open(filename), language)
+		language = lang_dict.get(update.message.chat_id, default_lang)
 
-	if config.CACHE_TEMP:
-		os.remove(filename)
+		image_text = pytesseract.image_to_string(Image.open(filename), language)
 
-	bot.sendMessage(chat_id=update.message.chat_id, text='Parsed in {}:\n\n{}'.format(available_langs[language], image_text))
+		if config.CACHE_TEMP:
+			os.remove(filename)
+
+		bot.sendMessage(chat_id=update.message.chat_id,
+						text='Parsed in {}:\n\n```\n{}\n```'.format(available_langs[language], _sanitize_string(image_text)),
+						parse_mode=telegram.ParseMode.MARKDOWN)
+	except Exception as e:
+		_something_wrong(bot, update, e)
+
 
 def lang(bot, update):
 	try:
 		_, language = update.message.text.split(' ')
 	except ValueError:
-		
+
 		try:
 			current_language = available_langs[lang_dict[update.message.chat_id]]
 			bot.sendMessage(chat_id=update.message.chat_id, text='Your current language is {}.'.format(current_language))
@@ -85,6 +91,16 @@ def lang(bot, update):
 		else:
 			bot.sendMessage(chat_id=update.message.chat_id, text="This language isn't available.")
 
-def _something_wrong(bot, update):
-	bot.sendMessage(chat_id=update.message.chat_id, text='Something went wrong')
+def _something_wrong(bot, update, e):
+	bot.sendMessage(chat_id=update.message.chat_id, text='Something went wrong...\nError type: {}\nError message: {}'.format(type(e), e))
 	traceback.print_exc()
+
+def _sanitize_string(string):
+	illegal_chars = '_*`[]()\\'
+
+	sanitized = ''
+
+	for char in string:
+		sanitized += '\\' + char if char in illegal_chars else char
+
+	return sanitized
