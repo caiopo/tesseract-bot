@@ -3,7 +3,7 @@
 import logging
 import handler
 import argparse
-import bot_token
+import config
 from telegram import Updater
 
 def resolve_args():
@@ -18,7 +18,7 @@ def resolve_args():
 def main():
 	resolve_args()
 
-	updater = Updater(token=bot_token.BOT_TOKEN)
+	updater = Updater(token=config.BOT_TOKEN)
 
 	dispatcher = updater.dispatcher
 

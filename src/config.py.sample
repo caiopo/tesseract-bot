@@ -1,0 +1,3 @@
+BOT_TOKEN='160508479:AAE4AjHsdeNODQ7f-la8DDf6UbnU_jfTNLg' # the token you get from botfather
+CACHE_DIR='../cache' # the directory used to store received images
+CACHE_TEMP=False # if True, images on cache will be deleted after parsing 
