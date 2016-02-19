@@ -5,6 +5,7 @@ import handler
 import argparse
 import config
 import errno
+import os
 from telegram import Updater
 
 def resolve_args():
