@@ -20,7 +20,7 @@ def resolve_args():
 def main():
 	resolve_args()
 
-	os.chdir(os.path.abspath(os.path.splitext(__file__)[0]))
+	os.chdir(os.path.split(os.path.abspath(__file__))[0])
 
 	try:
 	    os.mkdir(config.CACHE_DIR)
