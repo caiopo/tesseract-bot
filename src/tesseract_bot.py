@@ -4,6 +4,7 @@ import logging
 import handler
 import argparse
 import config
+import errno
 from telegram import Updater
 
 def resolve_args():
@@ -17,6 +18,12 @@ def resolve_args():
 
 def main():
 	resolve_args()
+
+	try:
+	    os.mkdir(config.CACHE_DIR)
+	except OSError:
+	    if e.errno != errno.EEXIST:
+	        raise
 
 	updater = Updater(token=config.BOT_TOKEN)
 
