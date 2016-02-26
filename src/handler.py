@@ -27,6 +27,7 @@ jpn  -> Japanese
 
 # /setcommands
 # lang - query or set your current language
+# help - detailed information about the bot
 
 DEFAULT_LANG = 'por'
 
