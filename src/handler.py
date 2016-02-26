@@ -28,9 +28,9 @@ jpn  -> Japanese
 # /setcommands
 # lang - query or set your current language
 
-lang_dict = {}
+DEFAULT_LANG = 'por'
 
-default_lang = 'por'
+lang_dict = {}
 
 available_langs = {'eng' : 'English',
 					'por' : 'Portuguese',
@@ -59,7 +59,7 @@ def message(bot, update):
 
 		photoFile.download(filename)
 
-		language = lang_dict.get(update.message.chat_id, default_lang)
+		language = lang_dict.get(update.message.chat_id, DEFAULT_LANG)
 
 		image_text = pytesseract.image_to_string(Image.open(filename), language)
 
@@ -82,7 +82,7 @@ def lang(bot, update):
 			current_language = available_langs[lang_dict[update.message.chat_id]]
 			bot.sendMessage(chat_id=update.message.chat_id, text='Your current language is {}.'.format(current_language))
 		except KeyError:
-			bot.sendMessage(chat_id=update.message.chat_id, text='Your current language is Default ({}).'.format(available_langs[default_lang]))
+			bot.sendMessage(chat_id=update.message.chat_id, text='Your current language is Default ({}).'.format(available_langs[DEFAULT_LANG]))
 
 	else:
 		if language in available_langs:
