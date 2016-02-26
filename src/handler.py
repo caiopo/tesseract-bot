@@ -93,8 +93,9 @@ def lang(bot, update):
 
 def _something_wrong(bot, update, e):
 	bot.sendMessage(chat_id=update.message.chat_id, text='Something went wrong...\nError type: {}\nError message: {}'.format(type(e), e))
-	traceback.print_exc()
-	print(e.strerror)
+	# traceback.print_exc()
+	print('deu erro:')
+	print(e, e.errno, e.strerror)
 
 def _sanitize_string(string):
 	illegal_chars = '_*`[]()\\'
