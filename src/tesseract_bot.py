@@ -37,6 +37,8 @@ def main():
 	dispatcher.addTelegramCommandHandler('start', handler.start)
 	dispatcher.addTelegramCommandHandler('help', handler.help)
 	dispatcher.addTelegramCommandHandler('lang', handler.lang)
+	dispatcher.addTelegramCommandHandler('tesseract', handler.tesseract)
+
 
 	dispatcher.addTelegramMessageHandler(handler.message)
 

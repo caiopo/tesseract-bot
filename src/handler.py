@@ -53,6 +53,11 @@ def unknown(bot, update):
 
 def message(bot, update):
 
+	print(update.message.chat_id)
+
+	if not update.message.photo:
+		return
+	
 	try:
 		photoFile = bot.getFile(update.message.photo[-1].file_id)
 
@@ -67,8 +72,16 @@ def message(bot, update):
 		if config.CACHE_TEMP:
 			os.remove(filename)
 
+		sanitized_string = _sanitize_string(image_text)
+
+		if sanitized_string:
+			response_msg = 'Parsed in {}:\n\n```\n{}\n```'.format(
+				available_langs[language], sanitized_string)
+		else:
+			response_msg = 'Nothing found! :(\nParsed in {}'.format(available_langs[language])
+
 		bot.sendMessage(chat_id=update.message.chat_id,
-						text='Parsed in {}:\n\n```\n{}\n```'.format(available_langs[language], _sanitize_string(image_text)),
+						text=response_msg,
 						parse_mode=telegram.ParseMode.MARKDOWN)
 	except Exception as e:
 		_something_wrong(bot, update, e)
@@ -91,6 +104,10 @@ def lang(bot, update):
 			bot.sendMessage(chat_id=update.message.chat_id, text='Your language is now {}.'.format(available_langs[language]))
 		else:
 			bot.sendMessage(chat_id=update.message.chat_id, text="This language isn't available.")
+
+
+def tesseract(bot, update):
+	pass
 
 def _something_wrong(bot, update, e):
 	bot.sendMessage(chat_id=update.message.chat_id, text='Something went wrong...\nError type: {}\nError message: {}'.format(type(e), e))
