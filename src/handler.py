@@ -75,11 +75,9 @@ def message(bot, update):
 	photosize = bot.getFile(update.message.photo[-1].file_id)
 
 	if update.message.chat_id > 0: # user	
-
 		_photosize_to_parsed(bot, update, photosize)
 
 	else: # group
-
 		group_photos[update.message.chat_id] = photosize
 
 
