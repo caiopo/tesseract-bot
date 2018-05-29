@@ -6,7 +6,9 @@ import argparse
 import config
 import errno
 import os
-from telegram import Updater
+from telegram.ext import Updater
+from telegram.ext import CommandHandler
+from telegram.ext import MessageHandler, Filters
 
 def resolve_args():
 	parser = argparse.ArgumentParser()
@@ -34,17 +36,26 @@ def main():
 
 	print(updater.bot.getMe())
 
-	dispatcher.addTelegramCommandHandler('start', handler.start)
-	dispatcher.addTelegramCommandHandler('help', handler.help)
-	dispatcher.addTelegramCommandHandler('lang', handler.lang)
-	dispatcher.addTelegramCommandHandler('tesseract', handler.tesseract)
+	start_handler = CommandHandler('start', handler.start)
+	dispatcher.add_handler(start_handler)
 
+	help_handler = CommandHandler('help', handler.help)
+	dispatcher.add_handler(help_handler)
 
-	dispatcher.addTelegramMessageHandler(handler.message)
+	lang_handler = CommandHandler('lang',handler.lang)
+	dispatcher.add_handler(lang_handler)
 
-	dispatcher.addUnknownTelegramCommandHandler(handler.unknown)
+	tesseract_handler = CommandHandler('tesseract',handler.tesseract)
+	dispatcher.add_handler(tesseract_handler)
+
+	message_handler = MessageHandler(Filters.photo,handler.message)
+	dispatcher.add_handler(message_handler)
+
+	unknown_handler = MessageHandler(Filters.command,handler.unknown)
+	dispatcher.add_handler(unknown_handler)
 
 	updater.start_polling()
+
 
 if __name__ == '__main__':
 	main()
